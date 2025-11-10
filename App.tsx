@@ -240,6 +240,30 @@ const App: React.FC = () => {
         setStatus(AppStatus.Welcome);
     };
 
+    const handleClearChat = () => {
+        setChatHistory([]);
+    };
+
+    const handleDownloadChat = () => {
+        const formattedHistory = chatHistory
+            .map(message => {
+                const prefix = message.role === 'user' ? 'Tu' : 'Modello';
+                return `${prefix}:\n${message.parts[0].text}\n`;
+            })
+            .join('\n---\n\n');
+        
+        const blob = new Blob([formattedHistory], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        const docNameCleaned = documentName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        link.download = `conversazione_${docNameCleaned}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     const handleSendMessage = async (message: string) => {
         if (!activeRagStoreName) return;
 
@@ -314,6 +338,8 @@ const App: React.FC = () => {
                     onSendMessage={handleSendMessage}
                     onNewChat={handleEndChat}
                     exampleQuestions={exampleQuestions}
+                    onClearChat={handleClearChat}
+                    onDownloadChat={handleDownloadChat}
                 />;
             case AppStatus.Error:
                  return (

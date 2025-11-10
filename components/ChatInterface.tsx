@@ -7,6 +7,8 @@ import { ChatMessage } from '../types';
 import TypingIndicator from './TypingIndicator';
 import SendIcon from './icons/SendIcon';
 import RefreshIcon from './icons/RefreshIcon';
+import ClearChatIcon from './icons/ClearChatIcon';
+import DownloadChatIcon from './icons/DownloadChatIcon';
 
 interface ChatInterfaceProps {
     documentName: string;
@@ -15,9 +17,11 @@ interface ChatInterfaceProps {
     onSendMessage: (message: string) => void;
     onNewChat: () => void;
     exampleQuestions: string[];
+    onClearChat: () => void;
+    onDownloadChat: () => void;
 }
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, isQueryLoading, onSendMessage, onNewChat, exampleQuestions }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, isQueryLoading, onSendMessage, onNewChat, exampleQuestions, onClearChat, onDownloadChat }) => {
     const [query, setQuery] = useState('');
     const [modalContent, setModalContent] = useState<string | null>(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
@@ -111,14 +115,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
             <header className="absolute top-0 left-0 right-0 p-4 bg-hitech-dark/80 backdrop-blur-sm z-10 flex justify-between items-center border-b border-hitech-border">
                 <div className="w-full max-w-4xl mx-auto flex justify-between items-center px-4">
                     <h1 className="text-2xl font-bold text-hitech-text-primary truncate" title="Chatta con i tuoi documenti">Chatta con i tuoi documenti</h1>
-                    <button
-                        onClick={onNewChat}
-                        className="flex items-center px-4 py-2 bg-hitech-accent hover:bg-hitech-accent-hover rounded-full text-hitech-dark font-semibold transition-colors flex-shrink-0"
-                        title="Termina la chat attuale e iniziane una nuova"
-                    >
-                        <RefreshIcon />
-                        <span className="ml-2 hidden sm:inline">Nuova Chat</span>
-                    </button>
+                    <div className="flex items-center space-x-2 flex-shrink-0">
+                        <button
+                            onClick={onDownloadChat}
+                            className="flex items-center px-4 py-2 bg-hitech-surface hover:bg-hitech-surface-hover rounded-full text-hitech-text-primary font-semibold transition-colors"
+                            title="Scarica conversazione"
+                        >
+                            <DownloadChatIcon />
+                            <span className="ml-2 hidden sm:inline">Scarica</span>
+                        </button>
+                         <button
+                            onClick={onClearChat}
+                            className="flex items-center px-4 py-2 bg-hitech-surface hover:bg-hitech-surface-hover rounded-full text-hitech-text-primary font-semibold transition-colors"
+                            title="Pulisci la chat"
+                        >
+                            <ClearChatIcon />
+                            <span className="ml-2 hidden sm:inline">Pulisci</span>
+                        </button>
+                        <button
+                            onClick={onNewChat}
+                            className="flex items-center px-4 py-2 bg-hitech-accent hover:bg-hitech-accent-hover rounded-full text-hitech-dark font-semibold transition-colors"
+                            title="Termina la chat attuale e iniziane una nuova"
+                        >
+                            <RefreshIcon />
+                            <span className="ml-2 hidden sm:inline">Nuova Chat</span>
+                        </button>
+                    </div>
                 </div>
             </header>
 
