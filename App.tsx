@@ -27,7 +27,7 @@ const App: React.FC = () => {
     const [status, setStatus] = useState<AppStatus>(AppStatus.Initializing);
     const [isAistudioAvailable, setIsAistudioAvailable] = useState(false);
     const [isAistudioKeySelected, setIsAistudioKeySelected] = useState(false);
-    const [apiKey, setApiKey] = useState('');
+    const [apiKey, setApiKey] = useState(() => localStorage.getItem('geminiApiKey') || '');
     const [apiKeyError, setApiKeyError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<{ current: number, total: number, message?: string, fileName?: string } | null>(null);
@@ -48,6 +48,14 @@ const App: React.FC = () => {
         setIsAistudioAvailable(isAvailable);
     }, []);
     
+    useEffect(() => {
+        if (apiKey) {
+            localStorage.setItem('geminiApiKey', apiKey);
+        } else {
+            localStorage.removeItem('geminiApiKey');
+        }
+    }, [apiKey]);
+
     const checkAistudioApiKey = useCallback(async () => {
         if (isAistudioAvailable) {
             try {

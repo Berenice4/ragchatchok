@@ -149,26 +149,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                                 : 'bg-gem-slate'
                             }`}>
                                 <div dangerouslySetInnerHTML={renderMarkdown(message.parts[0].text)} />
-                                {message.role === 'model' && message.groundingChunks && message.groundingChunks.length > 0 && (
-                                    <div className="mt-4 pt-3 border-t border-gem-mist/50">
-                                        <h4 className="text-xs font-semibold text-gem-offwhite/70 mb-2 text-right">Fonti:</h4>
-                                        <div className="flex flex-wrap gap-2 justify-end">
-                                            {message.groundingChunks.map((chunk, chunkIndex) => (
-                                                chunk.retrievedContext?.text && (
-                                                    <button
-                                                        key={chunkIndex}
-                                                        onClick={() => handleSourceClick(chunk.retrievedContext!.text!)}
-                                                        className="bg-gem-mist/50 hover:bg-gem-mist text-xs px-3 py-1 rounded-md transition-colors"
-                                                        aria-label={`Visualizza fonte ${chunkIndex + 1}`}
-                                                        title="Visualizza il frammento del documento di origine"
-                                                    >
-                                                        Fonte {chunkIndex + 1}
-                                                    </button>
-                                                )
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
                     ))}

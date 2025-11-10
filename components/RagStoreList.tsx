@@ -22,6 +22,7 @@ interface RagStoreListProps {
 const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLoading, onCreate, onSelect, onDelete, onRefresh }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [newStoreName, setNewStoreName] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
 
     const handleCreateClick = () => {
         setIsModalOpen(true);
@@ -39,6 +40,10 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
             handleModalClose();
         }
     };
+
+    const filteredStores = stores.filter(store =>
+        store.displayName.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
 
     return (
@@ -65,6 +70,16 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                         <PlusIcon />
                     </button>
                 </div>
+            </div>
+
+            <div className="mb-4">
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Cerca archivi..."
+                    className="w-full bg-gem-mist border border-gem-mist/50 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-gem-blue"
+                />
             </div>
 
             {isModalOpen && (
@@ -109,13 +124,13 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                 <div className="flex-grow flex items-center justify-center">
                     <Spinner />
                 </div>
-            ) : stores.length === 0 ? (
+            ) : filteredStores.length === 0 ? (
                 <div className="flex-grow flex items-center justify-center text-center text-gem-offwhite/60">
-                    <p>Nessun Archivio RAG trovato. <br /> Clicca su '+' per crearne uno.</p>
+                    <p>{stores.length > 0 ? 'Nessun archivio trovato.' : 'Nessun Archivio RAG trovato. \n Clicca su \'+\' per crearne uno.'}</p>
                 </div>
             ) : (
                 <ul className="space-y-2 overflow-y-auto">
-                    {stores.map((store) => (
+                    {filteredStores.map((store) => (
                         <li key={store.name} className="flex items-center justify-between group">
                             <button
                                 onClick={() => onSelect(store)}
