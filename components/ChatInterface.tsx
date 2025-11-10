@@ -125,14 +125,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
             <div className="flex-grow pt-24 pb-32 overflow-y-auto px-4">
                 <div className="w-full max-w-4xl mx-auto space-y-6">
                     {history.length === 0 && exampleQuestions.length > 0 && (
-                        <div className="p-4 rounded-lg animate-fade-slide-in">
+                        <div className="rounded-lg animate-fade-slide-in">
                             <h2 className="text-lg font-semibold mb-4 text-hitech-text-secondary text-center">Ecco alcuni suggerimenti per iniziare:</h2>
-                            <div className="flex flex-wrap justify-center gap-3">
-                                {exampleQuestions.map((q, i) => (
+                            <div className="flex overflow-x-auto space-x-3 pb-3 -mx-4 px-4 suggestions-scrollbar">
+                                {exampleQuestions.slice(0, 5).map((q, i) => (
                                     <button
                                         key={i}
                                         onClick={() => onSendMessage(q)}
-                                        className="text-sm text-hitech-text-primary bg-hitech-surface hover:bg-hitech-surface-hover transition-colors px-4 py-2 rounded-full"
+                                        className="text-sm text-hitech-text-primary bg-hitech-surface hover:bg-hitech-surface-hover transition-colors px-4 py-2 rounded-full flex-shrink-0 whitespace-nowrap"
                                     >
                                         {q}
                                     </button>
