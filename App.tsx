@@ -25,8 +25,9 @@ declare global {
 
 const App: React.FC = () => {
     const [status, setStatus] = useState<AppStatus>(AppStatus.Initializing);
-    const [isApiKeySelected, setIsApiKeySelected] = useState(false);
     const [isAistudioAvailable, setIsAistudioAvailable] = useState(false);
+    const [isAistudioKeySelected, setIsAistudioKeySelected] = useState(false);
+    const [apiKey, setApiKey] = useState('');
     const [apiKeyError, setApiKeyError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<{ current: number, total: number, message?: string, fileName?: string } | null>(null);
@@ -47,44 +48,41 @@ const App: React.FC = () => {
         setIsAistudioAvailable(isAvailable);
     }, []);
     
-    const checkApiKey = useCallback(async () => {
+    const checkAistudioApiKey = useCallback(async () => {
         if (isAistudioAvailable) {
             try {
                 const hasKey = await window.aistudio!.hasSelectedApiKey();
-                setIsApiKeySelected(hasKey);
+                setIsAistudioKeySelected(hasKey);
             } catch (e) {
-                console.error("Error checking for API key:", e);
-                setIsApiKeySelected(false);
+                console.error("Errore nel controllo della chiave API:", e);
+                setIsAistudioKeySelected(false);
             }
-        } else {
-            const apiKey = process.env.API_KEY;
-            setIsApiKeySelected(!!apiKey && apiKey.trim() !== '');
         }
     }, [isAistudioAvailable]);
 
     useEffect(() => {
         const handleVisibilityChange = () => {
             if (document.visibilityState === 'visible') {
-                checkApiKey();
+                checkAistudioApiKey();
             }
         };
         
-        checkApiKey();
+        checkAistudioApiKey();
 
         document.addEventListener('visibilitychange', handleVisibilityChange);
-        window.addEventListener('focus', checkApiKey);
+        window.addEventListener('focus', checkAistudioApiKey);
 
         return () => {
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            window.removeEventListener('focus', checkApiKey);
+            window.removeEventListener('focus', checkAistudioApiKey);
         };
-    }, [checkApiKey]);
+    }, [checkAistudioApiKey]);
 
     useEffect(() => {
         const handleUnload = () => {
             if (ragStoreNameRef.current) {
                 geminiService.deleteRagStore(ragStoreNameRef.current)
-                    .catch(err => console.error("Error deleting RAG store on unload:", err));
+                    .catch(err => console.error("Errore nell'eliminazione dell'archivio RAG allo scaricamento:", err));
             }
         };
 
@@ -115,15 +113,17 @@ const App: React.FC = () => {
         if (isAistudioAvailable) {
             try {
                 await window.aistudio!.openSelectKey();
-                await checkApiKey();
+                await checkAistudioApiKey();
             } catch (err) {
-                console.error("Failed to open API key selection dialog", err);
+                console.error("Impossibile aprire il dialogo di selezione della chiave API", err);
             }
         }
     };
 
+    const isApiKeyConfigured = isAistudioAvailable ? isAistudioKeySelected : apiKey.trim() !== '';
+
     const handleUploadAndStartChat = async () => {
-        if (!isApiKeySelected) {
+        if (!isApiKeyConfigured) {
             setApiKeyError("È richiesta una Chiave API Gemini per continuare.");
             throw new Error("È richiesta la Chiave API.");
         }
@@ -132,7 +132,7 @@ const App: React.FC = () => {
         setApiKeyError(null);
 
         try {
-            geminiService.initialize();
+            geminiService.initialize(isAistudioAvailable ? undefined : apiKey);
         } catch (err) {
             handleError("Inizializzazione fallita. Assicurati che la tua chiave API sia valida.", err);
             throw err;
@@ -184,7 +184,7 @@ const App: React.FC = () => {
             const errorMessage = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
             if (errorMessage.includes('api key not valid') || errorMessage.includes('requested entity was not found')) {
                 setApiKeyError("La Chiave API Gemini non è valida.");
-                setIsApiKeySelected(false);
+                if (isAistudioAvailable) setIsAistudioKeySelected(false);
                 setStatus(AppStatus.Welcome);
             } else {
                 handleError("Impossibile avviare la sessione di chat", err);
@@ -198,7 +198,7 @@ const App: React.FC = () => {
     const handleEndChat = () => {
         if (activeRagStoreName) {
             geminiService.deleteRagStore(activeRagStoreName).catch(err => {
-                console.error("Failed to delete RAG store in background", err);
+                console.error("Impossibile eliminare l'archivio RAG in background", err);
             });
         }
         setActiveRagStoreName(null);
@@ -245,7 +245,17 @@ const App: React.FC = () => {
                     </div>
                 );
             case AppStatus.Welcome:
-                 return <WelcomeScreen onUpload={handleUploadAndStartChat} apiKeyError={apiKeyError} files={files} setFiles={setFiles} isApiKeySelected={isApiKeySelected} onSelectKey={handleSelectKey} isAistudioAvailable={isAistudioAvailable} />;
+                 return <WelcomeScreen 
+                    onUpload={handleUploadAndStartChat} 
+                    apiKeyError={apiKeyError} 
+                    files={files} 
+                    setFiles={setFiles} 
+                    isApiKeySelected={isApiKeyConfigured} 
+                    onSelectKey={handleSelectKey} 
+                    isAistudioAvailable={isAistudioAvailable}
+                    apiKey={apiKey}
+                    setApiKey={setApiKey}
+                />;
             case AppStatus.Uploading:
                 let icon = null;
                 if (uploadProgress?.message === "Creazione dell'indice del documento...") {
@@ -285,7 +295,17 @@ const App: React.FC = () => {
                     </div>
                 );
             default:
-                 return <WelcomeScreen onUpload={handleUploadAndStartChat} apiKeyError={apiKeyError} files={files} setFiles={setFiles} isApiKeySelected={isApiKeySelected} onSelectKey={handleSelectKey} isAistudioAvailable={isAistudioAvailable} />;
+                 return <WelcomeScreen 
+                    onUpload={handleUploadAndStartChat} 
+                    apiKeyError={apiKeyError} 
+                    files={files} 
+                    setFiles={setFiles} 
+                    isApiKeySelected={isApiKeyConfigured} 
+                    onSelectKey={handleSelectKey} 
+                    isAistudioAvailable={isAistudioAvailable}
+                    apiKey={apiKey}
+                    setApiKey={setApiKey}
+                />;
         }
     }
 

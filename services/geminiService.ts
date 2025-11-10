@@ -7,8 +7,12 @@ import { RagStore, Document, QueryResult, CustomMetadata } from '../types';
 
 let ai: GoogleGenAI;
 
-export function initialize() {
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+export function initialize(apiKey?: string) {
+    const keyToUse = apiKey || process.env.API_KEY;
+    if (!keyToUse) {
+        throw new Error("La Chiave API non è configurata. Forniscine una o imposta la variabile d'ambiente API_KEY.");
+    }
+    ai = new GoogleGenAI({ apiKey: keyToUse });
 }
 
 async function delay(ms: number): Promise<void> {
@@ -16,16 +20,16 @@ async function delay(ms: number): Promise<void> {
 }
 
 export async function createRagStore(displayName: string): Promise<string> {
-    if (!ai) throw new Error("Gemini AI not initialized");
+    if (!ai) throw new Error("Gemini AI non inizializzato");
     const ragStore = await ai.fileSearchStores.create({ config: { displayName } });
     if (!ragStore.name) {
-        throw new Error("Failed to create RAG store: name is missing.");
+        throw new Error("Impossibile creare l'archivio RAG: nome mancante.");
     }
     return ragStore.name;
 }
 
 export async function uploadToRagStore(ragStoreName: string, file: File): Promise<void> {
-    if (!ai) throw new Error("Gemini AI not initialized");
+    if (!ai) throw new Error("Gemini AI non inizializzato");
     
     let op = await ai.fileSearchStores.uploadToFileSearchStore({
         fileSearchStoreName: ragStoreName,
@@ -39,7 +43,7 @@ export async function uploadToRagStore(ragStoreName: string, file: File): Promis
 }
 
 export async function fileSearch(ragStoreName: string, query: string): Promise<QueryResult> {
-    if (!ai) throw new Error("Gemini AI not initialized");
+    if (!ai) throw new Error("Gemini AI non inizializzato");
     const response: GenerateContentResponse = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
         contents: query + " NON CHIEDERE ALL'UTENTE DI LEGGERE IL MANUALE, individua le sezioni pertinenti nella risposta stessa.",
@@ -62,7 +66,7 @@ export async function fileSearch(ragStoreName: string, query: string): Promise<Q
 }
 
 export async function generateExampleQuestions(ragStoreName: string): Promise<string[]> {
-    if (!ai) throw new Error("Gemini AI not initialized");
+    if (!ai) throw new Error("Gemini AI non inizializzato");
     try {
         const response = await ai.models.generateContent({
             model: 'gemini-2.5-flash',
@@ -110,17 +114,17 @@ export async function generateExampleQuestions(ragStoreName: string): Promise<st
             }
         }
         
-        console.warn("Received unexpected format for example questions:", parsedData);
+        console.warn("Ricevuto formato inatteso per le domande di esempio:", parsedData);
         return [];
     } catch (error) {
-        console.error("Failed to generate or parse example questions:", error);
+        console.error("Impossibile generare o analizzare le domande di esempio:", error);
         return [];
     }
 }
 
 
 export async function deleteRagStore(ragStoreName: string): Promise<void> {
-    if (!ai) throw new Error("Gemini AI not initialized");
+    if (!ai) throw new Error("Gemini AI non inizializzato");
     // DO: Remove `(as any)` type assertion.
     await ai.fileSearchStores.delete({
         name: ragStoreName,

@@ -4,10 +4,7 @@
 */
 
 import React, { useState, useCallback } from 'react';
-import Spinner from './Spinner';
 import UploadCloudIcon from './icons/UploadCloudIcon';
-import CarIcon from './icons/CarIcon';
-import WashingMachineIcon from './icons/WashingMachineIcon';
 import TrashIcon from './icons/TrashIcon';
 
 interface WelcomeScreenProps {
@@ -18,28 +15,12 @@ interface WelcomeScreenProps {
     isApiKeySelected: boolean;
     onSelectKey: () => Promise<void>;
     isAistudioAvailable: boolean;
+    apiKey: string;
+    setApiKey: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const sampleDocuments = [
-    {
-        name: 'Manuale Hyundai i10',
-        details: '562 pagine, PDF',
-        url: 'https://www.hyundai.com/content/dam/hyundai/in/en/data/connect-to-service/owners-manual/2025/i20&i20nlineFromOct2023-Present.pdf',
-        icon: <CarIcon />,
-        fileName: 'hyundai-i10-manual.pdf'
-    },
-    {
-        name: 'Manuale Lavatrice LG',
-        details: '36 pagine, PDF',
-        url: 'https://www.lg.com/us/support/products/documents/WM2077CW.pdf',
-        icon: <WashingMachineIcon />,
-        fileName: 'lg-washer-manual.pdf'
-    }
-];
-
-const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, files, setFiles, isApiKeySelected, onSelectKey, isAistudioAvailable }) => {
+const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, files, setFiles, isApiKeySelected, onSelectKey, isAistudioAvailable, apiKey, setApiKey }) => {
     const [isDragging, setIsDragging] = useState(false);
-    const [loadingSample, setLoadingSample] = useState<string | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files) {
@@ -68,27 +49,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
         setIsDragging(false);
     }, []);
 
-    const handleSelectSample = async (name: string, url: string, fileName: string) => {
-        if (loadingSample) return;
-        setLoadingSample(name);
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Impossibile recuperare ${name}: ${response.statusText}. Potrebbe essere un problema di CORS.`);
-            }
-            const blob = await response.blob();
-            const file = new File([blob], fileName, { type: blob.type });
-            setFiles(prev => [...prev, file]);
-        } catch (error) {
-            console.error("Errore nel recuperare il file di esempio:", error);
-            if (error instanceof Error && error.message.includes('Failed to fetch')) {
-                alert(`Impossibile recuperare il documento di esempio. Prova a caricare un file locale.`);
-            }
-        } finally {
-            setLoadingSample(null);
-        }
-    };
-
     const handleConfirmUpload = async () => {
         try {
             await onUpload();
@@ -113,7 +73,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
             <div className="w-full max-w-3xl text-center">
                 <h1 className="text-4xl sm:text-5xl font-bold mb-2">Chatta con il tuo Documento</h1>
                 <p className="text-gem-offwhite/70 mb-8">
-                    Con la tecnologia di <strong className="font-semibold text-gem-offwhite">FileSearch</strong>. Carica un manuale o seleziona un esempio per vedere RAG in azione.
+                    Con la tecnologia di <strong className="font-semibold text-gem-offwhite">FileSearch</strong>. Carica un manuale per vedere RAG in azione.
                 </p>
 
                 <div className="w-full max-w-xl mx-auto mb-8 text-left">
@@ -138,25 +98,23 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
                                 )}
                             </>
                         ) : (
-                            <>
-                                {isApiKeySelected ? (
-                                    <div className="w-full bg-gem-slate border border-gem-mist/50 rounded-lg py-3 px-5 text-center text-gem-teal font-semibold">
-                                        ✓ Chiave API Caricata dall'Ambiente
-                                    </div>
-                                ) : (
-                                    <div className="w-full bg-amber-900/20 border border-amber-500/50 rounded-lg p-4 text-center">
-                                        <p className="font-semibold text-amber-300">Chiave API Gemini Richiesta</p>
-                                        <p className="text-sm text-amber-300/90 mt-2">
-                                            Questa applicazione richiede una chiave API Gemini per funzionare.
-                                        </p>
-                                        <p className="text-xs text-amber-300/70 mt-2">
-                                            <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-200">
-                                                Ulteriori informazioni sulla fatturazione
-                                            </a>
-                                        </p>
-                                    </div>
-                                )}
-                            </>
+                           <>
+                                <label htmlFor="api-key-input" className="sr-only">Chiave API Gemini</label>
+                                <input
+                                    id="api-key-input"
+                                    type="password"
+                                    value={apiKey}
+                                    onChange={(e) => setApiKey(e.target.value)}
+                                    placeholder="Inserisci la tua Chiave API Gemini"
+                                    className="w-full bg-gem-mist border border-gem-mist/50 rounded-lg py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gem-blue text-gem-offwhite"
+                                />
+                                <p className="text-xs text-gem-offwhite/60 mt-2 text-center">
+                                    La tua chiave API viene memorizzata solo nel browser per la durata della sessione.
+                                    <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-gem-blue ml-1">
+                                        Info sulla fatturazione.
+                                    </a>
+                                </p>
+                           </>
                         )}
                         {apiKeyError && <p className="text-red-400 text-sm mt-2 text-center">{apiKeyError}</p>}
                     </div>
@@ -227,35 +185,6 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
                                 Carica e Chatta
                             </button>
                         )}
-                    </div>
-                    
-                    <div className="flex items-center my-8">
-                        <div className="flex-grow border-t border-gem-mist"></div>
-                        <span className="flex-shrink mx-4 text-gem-offwhite/60">OPPURE</span>
-                        <div className="flex-grow border-t border-gem-mist"></div>
-                    </div>
-
-                    <div className="text-left mb-4">
-                        <p className="text-gem-offwhite/80">Prova un esempio:</p>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-12">
-                        {sampleDocuments.map(doc => (
-                            <button
-                                key={doc.name}
-                                onClick={() => handleSelectSample(doc.name, doc.url, doc.fileName)}
-                                disabled={!!loadingSample}
-                                className="bg-gem-slate p-4 rounded-lg border border-gem-mist/30 hover:border-gem-blue/50 hover:bg-gem-mist/10 transition-all text-left flex items-center space-x-4 disabled:opacity-50 disabled:cursor-wait"
-                                title={`Chatta con ${doc.name}`}
-                            >
-                                <div className="w-16 h-16 flex items-center justify-center flex-shrink-0 bg-gem-mist/20 rounded-lg">
-                                    {loadingSample === doc.name ? <Spinner /> : doc.icon}
-                                </div>
-                                <div>
-                                    <p className="font-semibold text-gem-offwhite">{doc.name}</p>
-                                    <p className="text-sm text-gem-offwhite/60">{doc.details}</p>
-                                </div>
-                            </button>
-                        ))}
                     </div>
                 </div>
             </div>
