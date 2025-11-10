@@ -136,7 +136,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
                         <>
                             {!isApiKeySelected ? (
                                  <div className="w-full bg-red-900/20 border border-red-500/50 rounded-lg py-3 px-5 text-center text-red-300 font-semibold">
-                                     Chiave API non trovata. Imposta la variabile d'ambiente API_KEY per continuare.
+                                     Chiave API Gemini non configurata.
                                  </div>
                             ) : (
                                 <div className="w-full bg-gem-slate border border-gem-mist/50 rounded-lg py-3 px-5 text-center text-gem-teal font-semibold">

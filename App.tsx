@@ -124,7 +124,7 @@ const App: React.FC = () => {
 
     const handleUploadAndStartChat = async () => {
         if (!isApiKeySelected) {
-            setApiKeyError("Per favore, seleziona o imposta la tua Chiave API Gemini.");
+            setApiKeyError("È richiesta una Chiave API Gemini per continuare.");
             throw new Error("È richiesta la Chiave API.");
         }
         if (files.length === 0) return;
@@ -183,7 +183,7 @@ const App: React.FC = () => {
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message.toLowerCase() : String(err).toLowerCase();
             if (errorMessage.includes('api key not valid') || errorMessage.includes('requested entity was not found')) {
-                setApiKeyError("La chiave API fornita non è valida. Selezionane una diversa o impostane una corretta e riprova.");
+                setApiKeyError("La Chiave API Gemini non è valida.");
                 setIsApiKeySelected(false);
                 setStatus(AppStatus.Welcome);
             } else {
