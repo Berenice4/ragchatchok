@@ -53,7 +53,7 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                 <div className="flex items-center space-x-2">
                      <button
                         onClick={onRefresh}
-                        className="p-2 bg-gem-mist hover:bg-gem-mist/70 rounded-full text-white transition-colors disabled:bg-gem-mist"
+                        className="p-2 bg-hitech-surface hover:bg-hitech-surface-hover rounded-full text-hitech-text-primary transition-colors disabled:bg-hitech-border"
                         disabled={isLoading}
                         aria-label="Aggiorna Archivi RAG"
                         title="Aggiorna la lista degli Archivi RAG"
@@ -62,7 +62,7 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                     </button>
                     <button
                         onClick={handleCreateClick}
-                        className="p-2 bg-gem-blue hover:bg-blue-500 rounded-full text-white transition-colors disabled:bg-gem-mist"
+                        className="p-2 bg-hitech-accent hover:bg-hitech-accent-hover rounded-full text-hitech-dark transition-colors disabled:bg-hitech-border"
                         disabled={isLoading}
                         aria-label="Crea nuovo Archivio RAG"
                         title="Crea un nuovo Archivio RAG"
@@ -78,13 +78,13 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="Cerca archivi..."
-                    className="w-full bg-gem-mist border border-gem-mist/50 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-gem-blue"
+                    className="w-full bg-hitech-surface border border-hitech-border rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-hitech-accent"
                 />
             </div>
 
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="create-store-title">
-                    <div className="bg-gem-slate p-6 rounded-lg shadow-xl w-full max-w-md">
+                    <div className="bg-hitech-surface p-6 rounded-lg shadow-xl w-full max-w-md">
                         <h3 id="create-store-title" className="text-xl font-bold mb-4">Crea Nuovo Archivio RAG</h3>
                         <form onSubmit={handleConfirmCreate}>
                             <label htmlFor="store-name" className="sr-only">Nome Archivio</label>
@@ -94,14 +94,14 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                                 value={newStoreName}
                                 onChange={(e) => setNewStoreName(e.target.value)}
                                 placeholder="Inserisci nome archivio"
-                                className="w-full bg-gem-mist border border-gem-mist/50 rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-gem-blue mb-4"
+                                className="w-full bg-hitech-dark border border-hitech-border rounded-md py-2 px-4 focus:outline-none focus:ring-2 focus:ring-hitech-accent mb-4"
                                 autoFocus
                             />
                             <div className="flex justify-end space-x-2">
                                 <button
                                     type="button"
                                     onClick={handleModalClose}
-                                    className="px-4 py-2 rounded-md bg-gem-mist hover:bg-gem-mist/70 transition-colors"
+                                    className="px-4 py-2 rounded-md bg-hitech-surface-hover hover:bg-hitech-border transition-colors"
                                     title="Annulla creazione archivio"
                                 >
                                     Annulla
@@ -109,7 +109,7 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                                 <button
                                     type="submit"
                                     disabled={!newStoreName.trim()}
-                                    className="px-4 py-2 rounded-md bg-gem-blue hover:bg-blue-500 text-white transition-colors disabled:bg-gem-mist/50 disabled:cursor-not-allowed"
+                                    className="px-4 py-2 rounded-md bg-hitech-accent hover:bg-hitech-accent-hover text-hitech-dark font-semibold transition-colors disabled:bg-hitech-border/50 disabled:cursor-not-allowed"
                                     title="Crea nuovo Archivio RAG"
                                 >
                                     Crea
@@ -125,7 +125,7 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                     <Spinner />
                 </div>
             ) : filteredStores.length === 0 ? (
-                <div className="flex-grow flex items-center justify-center text-center text-gem-offwhite/60">
+                <div className="flex-grow flex items-center justify-center text-center text-hitech-text-secondary">
                     <p>{stores.length > 0 ? 'Nessun archivio trovato.' : 'Nessun Archivio RAG trovato. \n Clicca su \'+\' per crearne uno.'}</p>
                 </div>
             ) : (
@@ -136,8 +136,8 @@ const RagStoreList: React.FC<RagStoreListProps> = ({ stores, selectedStore, isLo
                                 onClick={() => onSelect(store)}
                                 className={`w-full text-left p-3 rounded-md transition-colors text-lg ${
                                     selectedStore?.name === store.name
-                                        ? 'bg-gem-blue text-white'
-                                        : 'bg-gem-mist hover:bg-gem-mist/70'
+                                        ? 'bg-hitech-accent text-hitech-dark font-semibold'
+                                        : 'bg-hitech-surface hover:bg-hitech-surface-hover'
                                 }`}
                                 title={`Seleziona ${store.displayName} per vedere i suoi documenti`}
                             >

@@ -65,7 +65,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
             const line = rawLine
                 .replace(/\*\*(.*?)\*\*|__(.*?)__/g, '<strong>$1$2</strong>')
                 .replace(/\*(.*?)\*|_(.*?)_/g, '<em>$1$2</em>')
-                .replace(/`([^`]+)`/g, '<code class="bg-gem-mist/50 px-1 py-0.5 rounded-sm font-mono text-sm">$1</code>');
+                .replace(/`([^`]+)`/g, '<code class="bg-hitech-surface/50 px-1 py-0.5 rounded-sm font-mono text-sm">$1</code>');
 
             const isOl = line.match(/^\s*\d+\.\s(.*)/);
             const isUl = line.match(/^\s*[\*\-]\s(.*)/);
@@ -125,12 +125,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
 
     return (
         <div className="flex flex-col h-full relative">
-            <header className="absolute top-0 left-0 right-0 p-4 bg-gem-onyx/80 backdrop-blur-sm z-10 flex justify-between items-center border-b border-gem-mist">
+            <header className="absolute top-0 left-0 right-0 p-4 bg-hitech-dark/80 backdrop-blur-sm z-10 flex justify-between items-center border-b border-hitech-border">
                 <div className="w-full max-w-4xl mx-auto flex justify-between items-center px-4">
-                    <h1 className="text-2xl font-bold text-gem-offwhite truncate" title={`Chatta con ${documentName}`}>Chatta con {documentName}</h1>
+                    <h1 className="text-2xl font-bold text-hitech-text-primary truncate" title="Chatta con i tuoi documenti">Chatta con i tuoi documenti</h1>
                     <button
                         onClick={onNewChat}
-                        className="flex items-center px-4 py-2 bg-gem-blue hover:bg-blue-500 rounded-full text-white transition-colors flex-shrink-0"
+                        className="flex items-center px-4 py-2 bg-hitech-accent hover:bg-hitech-accent-hover rounded-full text-hitech-dark font-semibold transition-colors flex-shrink-0"
                         title="Termina la chat attuale e iniziane una nuova"
                     >
                         <RefreshIcon />
@@ -145,8 +145,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                         <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-slide-in`}>
                             <div className={`max-w-xl lg:max-w-2xl px-5 py-3 rounded-2xl ${
                                 message.role === 'user' 
-                                ? 'bg-gem-blue text-white' 
-                                : 'bg-gem-slate'
+                                ? 'bg-hitech-accent text-hitech-dark' 
+                                : 'bg-hitech-surface text-hitech-text-primary border border-hitech-border'
                             }`}>
                                 <div dangerouslySetInnerHTML={renderMarkdown(message.parts[0].text)} />
                             </div>
@@ -154,7 +154,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                     ))}
                     {isQueryLoading && (
                         <div className="flex justify-start animate-fade-slide-in">
-                            <div className="max-w-xl lg:max-w-2xl px-5 py-3 rounded-2xl bg-gem-slate flex items-center">
+                            <div className="max-w-xl lg:max-w-2xl px-5 py-3 rounded-2xl bg-hitech-surface border border-hitech-border flex items-center">
                                 <TypingIndicator />
                             </div>
                         </div>
@@ -163,13 +163,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                 </div>
             </div>
 
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gem-onyx/80 backdrop-blur-sm">
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-hitech-dark/80 backdrop-blur-sm">
                  <div className="max-w-4xl mx-auto">
                     <div className="text-center mb-2 min-h-[3rem] flex items-center justify-center">
                         {!isQueryLoading && currentSuggestion && (
                             <button
                                 onClick={() => setQuery(currentSuggestion)}
-                                className="text-base text-gem-offwhite bg-gem-slate hover:bg-gem-mist transition-colors px-4 py-2 rounded-full"
+                                className="text-base text-hitech-text-primary bg-hitech-surface hover:bg-hitech-surface-hover transition-colors px-4 py-2 rounded-full"
                                 title="Usa questo suggerimento come prompt"
                             >
                                 Prova: "{currentSuggestion}"
@@ -182,10 +182,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             placeholder="Fai una domanda sui manuali..."
-                            className="flex-grow bg-gem-mist border border-gem-mist/50 rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-gem-blue"
+                            className="flex-grow bg-hitech-surface border border-hitech-border rounded-full py-3 px-5 focus:outline-none focus:ring-2 focus:ring-hitech-accent text-hitech-text-primary"
                             disabled={isQueryLoading}
                         />
-                        <button type="submit" disabled={isQueryLoading || !query.trim()} className="p-3 bg-gem-blue hover:bg-blue-500 rounded-full text-white disabled:bg-gem-mist transition-colors" title="Invia messaggio">
+                        <button type="submit" disabled={isQueryLoading || !query.trim()} className="p-3 bg-hitech-accent hover:bg-hitech-accent-hover rounded-full text-hitech-dark disabled:bg-hitech-border transition-colors" title="Invia messaggio">
                             <SendIcon />
                         </button>
                     </form>
@@ -200,15 +200,15 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
                     aria-modal="true"
                     aria-labelledby="source-modal-title"
                 >
-                    <div className="bg-gem-slate p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
+                    <div className="bg-hitech-surface p-6 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col" onClick={e => e.stopPropagation()}>
                         <h3 id="source-modal-title" className="text-xl font-bold mb-4">Testo della Fonte</h3>
                         <div 
-                            className="flex-grow overflow-y-auto pr-4 text-gem-offwhite/80 border-t border-b border-gem-mist py-4"
+                            className="flex-grow overflow-y-auto pr-4 text-hitech-text-secondary border-t border-b border-hitech-border py-4"
                             dangerouslySetInnerHTML={renderMarkdown(modalContent || '')}
                         >
                         </div>
                         <div className="flex justify-end mt-6">
-                            <button onClick={closeModal} className="px-6 py-2 rounded-md bg-gem-blue hover:bg-blue-500 text-white transition-colors" title="Chiudi la vista della fonte">
+                            <button onClick={closeModal} className="px-6 py-2 rounded-md bg-hitech-accent hover:bg-hitech-accent-hover text-hitech-dark font-semibold transition-colors" title="Chiudi la vista della fonte">
                                 Chiudi
                             </button>
                         </div>

@@ -248,7 +248,7 @@ const App: React.FC = () => {
         switch(status) {
             case AppStatus.Initializing:
                 return (
-                    <div className="flex items-center justify-center h-screen">
+                    <div className="flex items-center justify-center h-full">
                         <Spinner /> <span className="ml-4 text-xl">Inizializzazione...</span>
                     </div>
                 );
@@ -294,10 +294,10 @@ const App: React.FC = () => {
                 />;
             case AppStatus.Error:
                  return (
-                    <div className="flex flex-col items-center justify-center h-screen bg-red-900/20 text-red-300">
+                    <div className="flex flex-col items-center justify-center h-full bg-red-900/50 text-red-300">
                         <h1 className="text-3xl font-bold mb-4">Errore dell'applicazione</h1>
                         <p className="max-w-md text-center mb-4">{error}</p>
-                        <button onClick={clearError} className="px-4 py-2 rounded-md bg-gem-mist hover:bg-gem-mist/70 transition-colors" title="Return to the welcome screen">
+                        <button onClick={clearError} className="px-4 py-2 rounded-md bg-hitech-surface hover:bg-hitech-surface-hover transition-colors" title="Return to the welcome screen">
                            Riprova
                         </button>
                     </div>
@@ -318,9 +318,14 @@ const App: React.FC = () => {
     }
 
     return (
-        <main className="h-screen bg-gem-onyx text-gem-offwhite">
-            {renderContent()}
-        </main>
+        <div className="flex flex-col min-h-screen bg-hitech-dark text-hitech-text-primary">
+            <main className="flex-grow flex flex-col">
+                {renderContent()}
+            </main>
+            <footer className="text-center p-4 text-sm text-hitech-text-secondary border-t border-hitech-border">
+                <a href="https://www.theround.it" target="_blank" rel="noopener noreferrer" className="hover:text-hitech-accent-hover transition-colors">©2025 THE ROUND</a>
+            </footer>
+        </div>
     );
 };
 

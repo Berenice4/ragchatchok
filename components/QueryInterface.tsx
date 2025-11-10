@@ -28,7 +28,7 @@ const QueryInterface: React.FC<QueryInterfaceProps> = ({ selectedStore, isLoadin
     
     if (!selectedStore) {
         return (
-            <div className="flex flex-col h-full items-center justify-center text-center text-gem-offwhite/60">
+            <div className="flex flex-col h-full items-center justify-center text-center text-hitech-text-secondary">
                  <p className="text-lg">Seleziona un Archivio RAG</p>
                 <p>per iniziare a fare domande.</p>
             </div>
@@ -46,19 +46,19 @@ const QueryInterface: React.FC<QueryInterfaceProps> = ({ selectedStore, isLoadin
                 )}
                 {result && (
                     <div>
-                        <div className="bg-gem-mist p-4 rounded-lg">
-                            <h3 className="font-semibold text-gem-teal mb-2">Risposta</h3>
+                        <div className="bg-hitech-surface p-4 rounded-lg">
+                            <h3 className="font-semibold text-hitech-accent mb-2">Risposta</h3>
                             <p className="whitespace-pre-wrap">{result.text}</p>
                         </div>
                         {result.groundingChunks.length > 0 && (
                              <div className="mt-4">
-                                <h3 className="font-semibold text-gem-teal mb-2">Fonti</h3>
+                                <h3 className="font-semibold text-hitech-accent mb-2">Fonti</h3>
                                 <div className="space-y-2">
                                 {result.groundingChunks.map((chunk, index) => (
                                     chunk.retrievedContext?.text && (
-                                        <details key={index} className="bg-gem-mist/50 p-3 rounded-lg text-sm">
+                                        <details key={index} className="bg-hitech-surface/50 p-3 rounded-lg text-sm">
                                             <summary className="cursor-pointer font-medium">Frammento Fonte {index + 1}</summary>
-                                            <p className="mt-2 text-gem-offwhite/80">{chunk.retrievedContext.text}</p>
+                                            <p className="mt-2 text-hitech-text-secondary">{chunk.retrievedContext.text}</p>
                                         </details>
                                     )
                                 ))}
@@ -68,7 +68,7 @@ const QueryInterface: React.FC<QueryInterfaceProps> = ({ selectedStore, isLoadin
                     </div>
                 )}
                  {!result && !isLoading && (
-                    <div className="flex h-full items-center justify-center text-gem-offwhite/60">
+                    <div className="flex h-full items-center justify-center text-hitech-text-secondary">
                         <p>Fai una domanda sui documenti.</p>
                     </div>
                 )}
@@ -79,10 +79,10 @@ const QueryInterface: React.FC<QueryInterfaceProps> = ({ selectedStore, isLoadin
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Fai una domanda..."
-                    className="flex-grow bg-gem-mist border border-gem-mist/50 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-gem-blue"
+                    className="flex-grow bg-hitech-surface border border-hitech-border/50 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-hitech-accent"
                     disabled={isLoading}
                 />
-                <button type="submit" disabled={isLoading || !query.trim()} className="p-3 bg-gem-blue rounded-full text-white disabled:bg-gem-mist transition-colors" title="Invia query">
+                <button type="submit" disabled={isLoading || !query.trim()} className="p-3 bg-hitech-accent rounded-full text-hitech-dark disabled:bg-hitech-border transition-colors" title="Invia query">
                     <SendIcon />
                 </button>
             </form>
