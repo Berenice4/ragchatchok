@@ -73,45 +73,47 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
             <div className="w-full max-w-3xl text-center">
                 <h1 className="text-4xl sm:text-5xl font-bold mb-8">Chatta con il tuo Documento</h1>
 
-                <div className="w-full max-w-xl mx-auto mb-8 text-left">
-                    <div className="bg-hitech-surface border border-hitech-border rounded-lg p-6">
-                        <h3 className="text-lg font-semibold mb-4 text-hitech-text-primary">Passo 1: Fornisci una Chiave API Gemini</h3>
-                        {isAistudioAvailable ? (
+                {!isApiKeySelected && (
+                    <div className="w-full max-w-xl mx-auto mb-8 text-left">
+                        <div className="bg-hitech-surface border border-hitech-border rounded-lg p-6">
+                            <h3 className="text-lg font-semibold mb-4 text-hitech-text-primary">Passo 1: Fornisci una Chiave API Gemini</h3>
+                            {isAistudioAvailable ? (
+                                <>
+                                    {isApiKeySelected ? (
+                                        <div className="w-full bg-hitech-surface border border-hitech-border rounded-lg py-3 px-5 text-center text-hitech-accent-hover font-semibold">
+                                            ✓ Chiave API Selezionata
+                                        </div>
+                                    ) : (
+                                        <div>
+                                            <button
+                                                onClick={handleSelectKeyClick}
+                                                className="w-full bg-hitech-accent hover:bg-hitech-accent-hover text-hitech-dark font-semibold rounded-lg py-3 px-5 text-center focus:outline-none focus:ring-2 focus:ring-hitech-accent"
+                                            >
+                                                Seleziona la Chiave API Gemini
+                                            </button>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
                             <>
-                                {isApiKeySelected ? (
-                                    <div className="w-full bg-hitech-surface border border-hitech-border rounded-lg py-3 px-5 text-center text-hitech-accent-hover font-semibold">
-                                        ✓ Chiave API Selezionata
-                                    </div>
-                                ) : (
-                                    <div>
-                                        <button
-                                            onClick={handleSelectKeyClick}
-                                            className="w-full bg-hitech-accent hover:bg-hitech-accent-hover text-hitech-dark font-semibold rounded-lg py-3 px-5 text-center focus:outline-none focus:ring-2 focus:ring-hitech-accent"
-                                        >
-                                            Seleziona la Chiave API Gemini
-                                        </button>
-                                    </div>
-                                )}
+                                    <label htmlFor="api-key-input" className="sr-only">Chiave API Gemini</label>
+                                    <input
+                                        id="api-key-input"
+                                        type="password"
+                                        value={apiKey}
+                                        onChange={(e) => setApiKey(e.target.value)}
+                                        placeholder="Inserisci la tua Chiave API Gemini"
+                                        className="w-full bg-hitech-dark border border-hitech-border rounded-lg py-3 px-5 focus:outline-none focus:ring-2 focus:ring-hitech-accent text-hitech-text-primary"
+                                    />
+                                    <p className="text-xs text-hitech-text-secondary mt-2 text-center">
+                                        La tua chiave API viene memorizzata in modo sicuro nel browser per le visite future.
+                                    </p>
                             </>
-                        ) : (
-                           <>
-                                <label htmlFor="api-key-input" className="sr-only">Chiave API Gemini</label>
-                                <input
-                                    id="api-key-input"
-                                    type="password"
-                                    value={apiKey}
-                                    onChange={(e) => setApiKey(e.target.value)}
-                                    placeholder="Inserisci la tua Chiave API Gemini"
-                                    className="w-full bg-hitech-dark border border-hitech-border rounded-lg py-3 px-5 focus:outline-none focus:ring-2 focus:ring-hitech-accent text-hitech-text-primary"
-                                />
-                                <p className="text-xs text-hitech-text-secondary mt-2 text-center">
-                                    La tua chiave API viene memorizzata in modo sicuro nel browser per le visite future.
-                                </p>
-                           </>
-                        )}
-                        {apiKeyError && <p className="text-red-400 text-sm mt-2 text-center">{apiKeyError}</p>}
+                            )}
+                            {apiKeyError && <p className="text-red-400 text-sm mt-2 text-center">{apiKeyError}</p>}
+                        </div>
                     </div>
-                </div>
+                )}
                 
                 <div className={`transition-opacity ${!isApiKeySelected ? 'opacity-50 pointer-events-none' : ''}`}>
                     <div className="text-left max-w-xl mx-auto mb-4">
