@@ -115,9 +115,9 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
                     </div>
                 )}
                 
-                <div className={`transition-opacity ${!isApiKeySelected ? 'opacity-50 pointer-events-none' : ''}`}>
+                <div className={`transition-opacity ${!isApiKeySelected ? 'opacity-50 pointer-events-none' : 'animate-fade-slide-in'}`}>
                     <div className="text-left max-w-xl mx-auto mb-4">
-                      <h3 className="text-lg font-semibold text-hitech-text-primary">Passo 2: Carica Documenti</h3>
+                      <h3 className="text-lg font-semibold text-hitech-text-primary">{isApiKeySelected ? "Carica Documenti" : "Passo 2: Carica Documenti"}</h3>
                     </div>
 
                     <div 

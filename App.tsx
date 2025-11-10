@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
 */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AppStatus, ChatMessage } from './types';
 import * as geminiService from './services/geminiService';
 import Spinner from './components/Spinner';
@@ -31,17 +31,24 @@ const App: React.FC = () => {
     const [apiKeyError, setApiKeyError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [uploadProgress, setUploadProgress] = useState<{ current: number, total: number, message?: string, fileName?: string } | null>(null);
-    const [activeRagStoreName, setActiveRagStoreName] = useState<string | null>(null);
-    const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
+    const [activeRagStoreName, setActiveRagStoreName] = useState<string | null>(() => localStorage.getItem('ragStoreName'));
+    const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => {
+        try {
+            return JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        } catch (e) {
+            return [];
+        }
+    });
     const [isQueryLoading, setIsQueryLoading] = useState(false);
-    const [exampleQuestions, setExampleQuestions] = useState<string[]>([]);
-    const [documentName, setDocumentName] = useState<string>('');
+    const [exampleQuestions, setExampleQuestions] = useState<string[]>(() => {
+        try {
+            return JSON.parse(localStorage.getItem('exampleQuestions') || '[]');
+        } catch (e) {
+            return [];
+        }
+    });
+    const [documentName, setDocumentName] = useState<string>(() => localStorage.getItem('documentName') || '');
     const [files, setFiles] = useState<File[]>([]);
-    const ragStoreNameRef = useRef(activeRagStoreName);
-
-    useEffect(() => {
-        ragStoreNameRef.current = activeRagStoreName;
-    }, [activeRagStoreName]);
 
     useEffect(() => {
         const isAvailable = !!window.aistudio?.hasSelectedApiKey && !!window.aistudio?.openSelectKey;
@@ -55,6 +62,20 @@ const App: React.FC = () => {
             localStorage.removeItem('geminiApiKey');
         }
     }, [apiKey]);
+    
+    useEffect(() => {
+        if (activeRagStoreName) {
+            localStorage.setItem('ragStoreName', activeRagStoreName);
+            localStorage.setItem('documentName', documentName);
+            localStorage.setItem('chatHistory', JSON.stringify(chatHistory));
+            localStorage.setItem('exampleQuestions', JSON.stringify(exampleQuestions));
+        } else {
+            localStorage.removeItem('ragStoreName');
+            localStorage.removeItem('documentName');
+            localStorage.removeItem('chatHistory');
+            localStorage.removeItem('exampleQuestions');
+        }
+    }, [activeRagStoreName, documentName, chatHistory, exampleQuestions]);
 
     const checkAistudioApiKey = useCallback(async () => {
         if (isAistudioAvailable) {
@@ -67,6 +88,32 @@ const App: React.FC = () => {
             }
         }
     }, [isAistudioAvailable]);
+    
+    const isApiKeyConfigured = isAistudioAvailable ? isAistudioKeySelected : apiKey.trim() !== '';
+
+    useEffect(() => {
+        const initialize = async () => {
+            await checkAistudioApiKey();
+            const storedRagStore = localStorage.getItem('ragStoreName');
+            // Use a separate variable to check the latest state of isApiKeyConfigured
+            const keyConfigured = isAistudioAvailable ? (await window.aistudio?.hasSelectedApiKey()) : (localStorage.getItem('geminiApiKey') || '').trim() !== '';
+
+            if (storedRagStore && keyConfigured) {
+                try {
+                     geminiService.initialize(isAistudioAvailable ? undefined : apiKey || localStorage.getItem('geminiApiKey')!);
+                     setStatus(AppStatus.Chatting);
+                } catch(err) {
+                     // If init fails, clear session and go to welcome
+                     localStorage.removeItem('ragStoreName');
+                     setStatus(AppStatus.Welcome);
+                }
+            } else {
+                setStatus(AppStatus.Welcome);
+            }
+        };
+        initialize();
+    }, [isAistudioAvailable, apiKey]);
+
 
     useEffect(() => {
         const handleVisibilityChange = () => {
@@ -75,8 +122,6 @@ const App: React.FC = () => {
             }
         };
         
-        checkAistudioApiKey();
-
         document.addEventListener('visibilitychange', handleVisibilityChange);
         window.addEventListener('focus', checkAistudioApiKey);
 
@@ -85,22 +130,6 @@ const App: React.FC = () => {
             window.removeEventListener('focus', checkAistudioApiKey);
         };
     }, [checkAistudioApiKey]);
-
-    useEffect(() => {
-        const handleUnload = () => {
-            if (ragStoreNameRef.current) {
-                geminiService.deleteRagStore(ragStoreNameRef.current)
-                    .catch(err => console.error("Errore nell'eliminazione dell'archivio RAG allo scaricamento:", err));
-            }
-        };
-
-        window.addEventListener('beforeunload', handleUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleUnload);
-        };
-    }, []);
-
 
     const handleError = (message: string, err: any) => {
         console.error(message, err);
@@ -113,10 +142,6 @@ const App: React.FC = () => {
         setStatus(AppStatus.Welcome);
     }
 
-    useEffect(() => {
-        setStatus(AppStatus.Welcome);
-    }, []);
-
     const handleSelectKey = async () => {
         if (isAistudioAvailable) {
             try {
@@ -127,8 +152,6 @@ const App: React.FC = () => {
             }
         }
     };
-
-    const isApiKeyConfigured = isAistudioAvailable ? isAistudioKeySelected : apiKey.trim() !== '';
 
     const handleUploadAndStartChat = async () => {
         if (!isApiKeyConfigured) {
@@ -183,9 +206,9 @@ const App: React.FC = () => {
                 docName = `${files.length} documenti`;
             }
             setDocumentName(docName);
-
+            
+            setChatHistory([]); // Start with a fresh chat history
             setActiveRagStoreName(ragStoreName);
-            setChatHistory([]);
             setStatus(AppStatus.Chatting);
             setFiles([]); // Clear files on success
         } catch (err) {

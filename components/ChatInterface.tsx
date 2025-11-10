@@ -19,25 +19,8 @@ interface ChatInterfaceProps {
 
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, isQueryLoading, onSendMessage, onNewChat, exampleQuestions }) => {
     const [query, setQuery] = useState('');
-    const [currentSuggestion, setCurrentSuggestion] = useState('');
     const [modalContent, setModalContent] = useState<string | null>(null);
     const chatEndRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (exampleQuestions.length === 0) {
-            setCurrentSuggestion('');
-            return;
-        }
-
-        setCurrentSuggestion(exampleQuestions[0]);
-        let suggestionIndex = 0;
-        const intervalId = setInterval(() => {
-            suggestionIndex = (suggestionIndex + 1) % exampleQuestions.length;
-            setCurrentSuggestion(exampleQuestions[suggestionIndex]);
-        }, 5000);
-
-        return () => clearInterval(intervalId);
-    }, [exampleQuestions]);
     
     const renderMarkdown = (text: string) => {
         if (!text) return { __html: '' };
@@ -141,6 +124,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
 
             <div className="flex-grow pt-24 pb-32 overflow-y-auto px-4">
                 <div className="w-full max-w-4xl mx-auto space-y-6">
+                    {history.length === 0 && exampleQuestions.length > 0 && (
+                        <div className="p-4 rounded-lg animate-fade-slide-in">
+                            <h2 className="text-lg font-semibold mb-4 text-hitech-text-secondary text-center">Ecco alcuni suggerimenti per iniziare:</h2>
+                            <div className="flex flex-wrap justify-center gap-3">
+                                {exampleQuestions.map((q, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => onSendMessage(q)}
+                                        className="text-sm text-hitech-text-primary bg-hitech-surface hover:bg-hitech-surface-hover transition-colors px-4 py-2 rounded-full"
+                                    >
+                                        {q}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {history.map((message, index) => (
                         <div key={index} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fade-slide-in`}>
                             <div className={`max-w-xl lg:max-w-2xl px-5 py-3 rounded-2xl ${
@@ -165,17 +164,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ documentName, history, is
 
             <div className="absolute bottom-0 left-0 right-0 p-4 bg-hitech-dark/80 backdrop-blur-sm">
                  <div className="max-w-4xl mx-auto">
-                    <div className="text-center mb-2 min-h-[3rem] flex items-center justify-center">
-                        {!isQueryLoading && currentSuggestion && (
-                            <button
-                                onClick={() => setQuery(currentSuggestion)}
-                                className="text-base text-hitech-text-primary bg-hitech-surface hover:bg-hitech-surface-hover transition-colors px-4 py-2 rounded-full"
-                                title="Usa questo suggerimento come prompt"
-                            >
-                                Prova: "{currentSuggestion}"
-                            </button>
-                        )}
-                    </div>
                      <form onSubmit={handleSubmit} className="flex items-center space-x-3">
                         <input
                             type="text"
