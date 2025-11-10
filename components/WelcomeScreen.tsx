@@ -144,9 +144,16 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onUpload, apiKeyError, fi
                                         ✓ Chiave API Caricata dall'Ambiente
                                     </div>
                                 ) : (
-                                    <div className="w-full bg-gem-mist/20 border border-gem-mist/50 rounded-lg p-4 text-center">
-                                        <p className="font-semibold text-gem-offwhite">Chiave API Gemini non configurata.</p>
-                                        <p className="text-xs text-gem-offwhite/60 mt-1">Questa app richiede una chiave API per funzionare. <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-gem-blue">Info sulla fatturazione.</a></p>
+                                    <div className="w-full bg-amber-900/20 border border-amber-500/50 rounded-lg p-4 text-center">
+                                        <p className="font-semibold text-amber-300">Chiave API Gemini Richiesta</p>
+                                        <p className="text-sm text-amber-300/90 mt-2">
+                                            Questa applicazione richiede una chiave API Gemini per funzionare.
+                                        </p>
+                                        <p className="text-xs text-amber-300/70 mt-2">
+                                            <a href="https://ai.google.dev/gemini-api/docs/billing" target="_blank" rel="noopener noreferrer" className="underline hover:text-amber-200">
+                                                Ulteriori informazioni sulla fatturazione
+                                            </a>
+                                        </p>
                                     </div>
                                 )}
                             </>
